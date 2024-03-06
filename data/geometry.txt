@@ -1,0 +1,218 @@
+theory
+  equiv rel equal/2
+  rel point/1
+  rel edge/1
+  rel line/1
+  rel angle/1
+  rel triangle/1
+  rel quadrilateral/1
+  rel circle/1
+  rel pi/1
+  symm fun edge_from/2+1
+  symm fun line_through/2+1
+  symm fun triangle_from/3+1
+  fun angle_from/3+1
+  cycl fun quadrilateral_from/4+1
+  cycl fun convex_quadrilateral_from/4+1
+  fun circle_from/2+1
+  symm fun circle_through/3+1
+  rel acute_triangle/1
+  rel obtuse_triangle/1
+  rel right_triangle/1
+  rel isosceles_triangle/1
+  rel convex_quadrilateral/1
+  rel cyclic_quadrilateral/1
+  symm rel similar_triangles/2
+  rel similar/6
+  fun circumcircle/1+1
+  fun circumcenter/1+1
+  fun center/1+1
+  fun centroid/1+1
+  fun midpoint/1+1
+  fun projection/2+1
+  rel incident/2
+  symm rel collinear/3
+  symm fun collinear_on/3+1
+  symm rel parallel/2
+  symm rel concurrent/2
+  symm fun concurrent_at/2+1
+  symm rel intersect/2
+  rel intersect_at/3
+  rel secant_line/2
+  rel secant_line_at/3
+  rel tangent_line/2
+  fun tangent_line_at/2+1
+  rel secant_or_tangent_line/2
+  rel tangent_circles/2
+  rel tangent_circles_at/3
+  symm fun distance/2+1
+  fun length/1+1
+  fun measure/1+1
+  fun half_plane/2+1
+  rel between/3
+  rel interior/2
+  --rel exterior/2
+  fun power_of_a_point/2+1
+  --rel scalar/1
+  --rel nonnegative/1
+  rel zero/1
+  rel one/1
+  symm fun sum/2+1
+  fun difference/2+1
+  symm fun product/2+1
+  fun ratio/2+1
+
+  --axm for a, b the e { edge_from(a, b -> e) :- point(a), point(b), a /= b }
+  axm for a, b, ab_ext the ab { edge_from(a, b -> ab) :- line_through(a, b -> ab_ext) }
+  axm for a, b, c the ac { edge_from(a, c -> ac) :- between(a, b, c) }
+  axm for a, b, e { point(a), point(b), edge(e), a /= b, incident(a, e), incident(b, e) :- edge_from(a, b -> e) }
+
+  --axm for a, b the l { line_through(a, b -> l) :- point(a), point(b), a /= b }
+  axm for a, b, ab the ab_ext { line_through(a, b -> ab_ext) :- edge_from(a, b -> ab) }
+  axm for a, b, c the ab_ext { line_through(a, b -> ab_ext) :- collinear(a, b, c) }
+  axm for a, b, c the ab_ext { line_through(a, b -> ab_ext) :- -/collinear(a, b, c) }
+  axm for a, b, l { point(a), point(b), line(l), a /= b, incident(a, l), incident(b, l) :- line_through(a, b -> l) }
+
+  axm for a, b, p, ab, l { line_through(a, p -> l), line_through(b, p -> l), collinear(a, p, b) :- edge_from(a, b -> ab), incident(p, ab), a /= p, b /= p, line_through(a, b -> l) }
+  axm for a, b, p, ab, l { line_through(a, b -> l), line_through(b, p -> l), collinear(a, p, b) :- edge_from(a, b -> ab), incident(p, ab), a /= p, b /= p, line_through(a, p -> l) }
+
+  --axm for a, b, c, ab, ab_ext { line_through(a, c -> ab_ext), line_through(b, c -> ab_ext) :- edge_from(a, b -> ab), line_through(a, b -> ab_ext), incident(c, ab) }
+  --axm for a, b, c, ab { line_through(a, c -> ab), line_through(b, c -> ab) :- line_through(a, b -> ab), incident(c, ab) }
+  axm for a, b, c, ab, ab_ext { line_through(a, c -> ab_ext), line_through(b, c -> ab_ext) :- edge_from(a, b -> ab), line_through(a, b -> ab_ext), incident(c, ab), a /= c, b /= c }
+  axm for a, b, c, ab { line_through(a, c -> ab), line_through(b, c -> ab) :- line_through(a, b -> ab), incident(c, ab), a /= c, b /= c }
+  --axm for a, b, c, ab, ab_ext, ac, bc { ab_ext = ac, ab_ext = bc :- edge_from(a, b -> ab), line_through(a, b -> ab_ext), incident(c, ab), line_through(a, c -> ac), line_through(b, c -> bc) }
+  --axm for a, b, c, ab_ext, ac, bc { ab_ext = ac, ab_ext = bc :- line_through(a, b -> ab_ext), incident(c, ab_ext), line_through(a, c -> ac), line_through(b, c -> bc) }
+
+  --axm for a, b, ab, p { point(p), collinear(a, p, b), incident(p, ab), p /= a, p /= b :- edge_from(a, b -> ab), midpoint(ab -> p) }
+  axm for a, b, ab, p { collinear(a, p, b), incident(p, ab) :- edge_from(a, b -> ab), midpoint(ab -> p) }
+  -- (103) midline theorem
+  thm for a, b, c, abc, ab, ac, bc, b', c', b'c' { parallel(bc, b'c') :- triangle_from(a, b, c -> abc), edge_from(a, b -> ab), edge_from(a, c -> ac), line_through(b, c -> bc), midpoint(ab -> b'), midpoint(ac -> c'), line_through(b', c' -> b'c') } proof elided
+
+  axm for t, w { triangle(t), circle(w) :- circumcircle(t -> w) }
+  axm for w the o { center(w -> o) :- circle(w) }
+  axm for w, o { point(o) :- center(w -> o) }
+  --axm for a, b, c, w { point(a), point(b), point(c), incident(a, w), incident(b, w), incident(c, w), -/collinear(a, b, c) :- circle_through(a, b, c -> w) }
+  axm for a, b, c, w { incident(a, w), incident(b, w), incident(c, w), -/collinear(a, b, c) :- circle_through(a, b, c -> w) }
+  axm for a, b, c, abc, w { circumcircle(abc -> w) :- circle_through(a, b, c -> w), triangle_from(a, b, c -> abc) }
+  axm for a, b, c, abc, w { circle_through(a, b, c -> w) :- triangle_from(a, b, c -> abc), circumcircle(abc -> w) }
+
+  axm for a, b, c { point(a), point(b), point(c), a /= b, b /= c, c /= a :- collinear(a, b, c) }
+  axm for a, b, c { point(a), point(b), point(c), a /= b, b /= c, c /= a :- -/collinear(a, b, c) }
+  axm for a, b, c, ab { line_through(b, c -> ab), line_through(a, c -> ab) :- line_through(a, b -> ab), collinear(a, b, c) }
+
+  axm for l, l', p { point(p), line(l), line(l'), incident(p, l), incident(p, l'), -/parallel(l, l'), l /= l' :- concurrent_at(l, l' -> p) }
+  --axm for a, b, c, ab, bc { -/collinear(a, b, c) :- line_through(a, b -> ab), line_through(b, c -> bc), a /= c, concurrent(ab, bc) }
+  axm for a, b, c, ab, bc, b' { -/collinear(a, b, c) :- line_through(a, b -> ab), line_through(b, c -> bc), a /= c, concurrent_at(ab, bc -> b'), b = b' }
+  axm for a, b, c, ab, bc { concurrent_at(ab, bc -> b) :- line_through(a, b -> ab), line_through(b, c -> bc), -/collinear(a, b, c) }
+
+  axm for l, l', l'', p the q { concurrent_at(l, l'' -> q) :- concurrent_at(l, l' -> p), parallel(l', l'') }
+  axm for l, l', p { line(l), line(l'), point(p), l /= l' :- concurrent_at(l, l' -> p) }
+  axm for l, l', l'', p, q { p /= q :- concurrent_at(l, l' -> p), concurrent_at(l, l'' -> q), parallel(l', l'') }
+  axm for a, b, c, l, ac_ext, ab, bc, bc_ext, p the q { concurrent_at(l, bc_ext -> q) :- -/collinear(a, b, c), line_through(a, c -> ac_ext), parallel(l, ac_ext), edge_from(a, b -> ab), edge_from(b, c -> bc), incident(p, l), incident(p, ab), line_through(b, c -> bc_ext) }
+  axm for a, b, c, l, ac_ext, ab, bc, bc_ext, p, q { incident(q, bc) :- -/collinear(a, b, c), line_through(a, c -> ac_ext), parallel(l, ac_ext), edge_from(a, b -> ab), edge_from(b, c -> bc), incident(p, l), incident(p, ab), line_through(b, c -> bc_ext), concurrent_at(l, bc_ext -> q) }
+
+  axm for l, l' { line(l), line(l'), l /= l' :- parallel(l, l') }
+  axm for p, q, l, l' { p /= q, -/incident(p, l'), -/incident(q, l) :- parallel(l, l'), incident(p, l), incident(q, l') }
+
+  axm for a, b, c, l { collinear(a, b, c) :- line(l), incident(a, l), incident(b, l), incident(c, l), a /= b, b /= c, a /= c }
+  --axm for x, p, p', q, q', l, l' { between(x, q, q') :- parallel(l, l'), incident(p, l), incident(p', l'), between(x, p, p'), incident(q, l), incident(q', l'), collinear(x, q, q') }
+
+  axm for a, b, c, d, ab, ab_ext, l, ac, dc, bc, p, p', p'' { between(p, p', p''), p' /= d, p' /= c, p'' /= b, p'' /= c :- -/collinear(a, b, c), edge_from(a, b -> ab), incident(d, ab), a /= d, b /= d, line_through(a, b -> ab_ext), parallel(ab_ext, l), incident(p, l), edge_from(a, c -> ac), incident(p, ac), p /= a, p /= c, edge_from(d, c -> dc), incident(p', l), incident(p', dc), edge_from(b, c -> bc), incident(p'', l), incident(p'', bc) }
+  axm for a, b, c, d, ab, ab_ext, l, ac, dc, bc, p, p', p'' { between(p, p', p''), p /= a, p /= c, p'' /= b, p'' /= c :- -/collinear(a, b, c), edge_from(a, b -> ab), incident(d, ab), a /= d, b /= d, line_through(a, b -> ab_ext), parallel(ab_ext, l), incident(p', l), edge_from(d, c -> dc), incident(p, dc), p /= d, p /= c, edge_from(a, c -> ac), incident(p, l), incident(p, ac), edge_from(b, c -> bc), incident(p'', l), incident(p'', bc) }
+
+  axm for a, b, c { a /= b, b /= c, a /= c, point(a), point(b), point(c), between(c, b, a), collinear(a, b, c) :- between(a, b, c) }
+  axm for a, b, ab, p { between(a, p, b) :- edge_from(a, b -> ab), incident(p, ab), a /= p, b /= p }
+  --axm for a, b, p, l, h_a, h_b { between(p, a, b) :- collinear(a, p, b), incident(p, l), half_plane(a, l -> h_a), half_plane(b, l -> h_b), h_a = h_b }
+  axm for a, b, p, l, h_a, h_b { between(a, p, b) :- collinear(a, p, b), incident(p, l), half_plane(a, l -> h_a), half_plane(b, l -> h_b), h_a /= h_b }
+  axm for l, l', p, p', q, q', x { between(x, q, q') :- parallel(l, l'), incident(p, l), incident(p', l'), incident(q, l), incident(q', l'), collinear(q, q', x), between(x, p, p') }
+  axm for l, l', p, p', q, q', x { between(q, x, q') :- parallel(l, l'), incident(p, l), incident(p', l'), incident(q, l), incident(q', l'), collinear(q, q', x), between(p, x, p') }
+
+  --axm for a, b, p, l, l', h_a, h_b { h_a /= h_b :- between(a, p, b), line_through(a, b -> l), line(l'), l /= l', incident(p, l'), half_plane(a, l' -> h_a), half_plane(b, l' -> h_b) }
+  axm for a, b, p, l, l', h_a, h_b { h_a /= h_b :- between(a, p, b), line_through(a, b -> l), concurrent_at(l, l' -> p), half_plane(a, l' -> h_a), half_plane(b, l' -> h_b) }
+
+  axm for a, b, c the abc { triangle_from(a, b, c -> abc) :- -/collinear(a, b, c) }
+  --axm for a, b, c, abc { triangle(abc), point(a), point(b), point(c), a /= b, b /= c, c /= a, -/collinear(a, b, c) :- triangle_from(a, b, c -> abc) }
+  axm for a, b, c, abc { triangle(abc), -/collinear(a, b, c) :- triangle_from(a, b, c -> abc) }
+  axm for a, b, c, ab, bc, ca { -/incident(a, bc), -/incident(b, ca), -/incident(c, ab) :- -/collinear(a, b, c), edge_from(a, b -> ab), edge_from(b, c -> bc), edge_from(c, a -> ca) }
+
+  -- pasch variations
+  axm for a, b, c, ab, p { -/collinear(a, p, c), -/collinear(b, p, c) :- -/collinear(a, b, c), edge_from(a, b -> ab), incident(p, ab), p /= a, p /= b }
+  axm for a, b, c, ab, ac, p, q { -/collinear(a, p, q), -/collinear(b, p, q), -/collinear(c, p, q), -/collinear(b, c, p), -/collinear(b, c, q) :- -/collinear(a, b, c), edge_from(a, b -> ab), edge_from(a, c -> ac), incident(p, ab), p /= a, p /= b, incident(q, ac), q /= a, q /= c }
+
+  axm for a, b, c, bc { -/incident(a, bc) :- -/collinear(a, b, c), edge_from(b, c -> bc) }
+  axm for a, b, c, bc { -/incident(a, bc) :- -/collinear(a, b, c), line_through(b, c -> bc) }
+  axm for a, b, c, ab, ac, ac_ext, p { -/incident(p, ac), -/incident(p, ac_ext) :- -/collinear(a, b, c), edge_from(a, b -> ab), edge_from(a, c -> ac), line_through(a, c -> ac_ext), incident(p, ab), p /= a, p /= b }
+
+  -- similar triangles
+  thm for a, b, c, abc { similar(a, b, c, a, b, c) :- triangle_from(a, b, c -> abc) } proof elided
+  thm for a, b, c, a', b', c', abc, a'b'c' { similar_triangles(abc, a'b'c') :- similar(a, b, c, a', b', c'), triangle_from(a, b, c -> abc), triangle_from(a', b', c' -> a'b'c') } proof elided
+  thm for a, b, c, a', b', c' { similar(a', b', c', a, b, c) :- similar(a, b, c, a', b', c') } proof elided
+  thm for a, b, c, a', b', c' { similar(b, c, a, b', c', a') :- similar(a, b, c, a', b', c') } proof elided
+  thm for a, b, c, a', b', c' { similar(c, b, a, c', b', a') :- similar(a, b, c, a', b', c') } proof elided
+  thm for a, b, c, a', b', c', t_abc, t_bca, t_a'b'c', t_b'c'a', m_abc, m_bca, m_a'b'c', m_b'c'a' { similar(a, b, c, a', b', c') :- -/collinear(a, b, c), -/collinear(a', b', c'), angle_from(a, b, c -> t_abc), angle_from(a', b', c' -> t_a'b'c'), angle_from(b, c, a -> t_bca), angle_from(b', c', a' -> t_b'c'a'), measure(t_abc -> m_abc), measure(t_bca -> m_bca), measure(t_a'b'c' -> m_a'b'c'), measure(t_b'c'a' -> m_b'c'a'), m_abc = m_a'b'c', m_bca = m_b'c'a' } proof elided
+  thm for a, b, c, a', b', c', ab, bc, a'b', b'c', l_ab, l_bc, l_a'b', l_b'c', r_ab_bc, r_a'b'_b'c' { r_ab_bc = r_a'b'_b'c' :- similar(a, b, c, a', b', c'), edge_from(a, b -> ab), edge_from(b, c -> bc), edge_from(a', b' -> a'b'), edge_from(b', c' -> b'c'), length(ab -> l_ab), length(bc -> l_bc), length(a'b' -> l_a'b'), length(b'c' -> l_b'c'), ratio(l_ab, l_bc -> r_ab_bc), ratio(l_a'b', l_b'c' -> r_a'b'_b'c') } proof elided
+
+  -- quadrilaterals (todo)
+
+  -- convex quadrilaterals
+  axm for a, b, c, d, abcd { convex_quadrilateral(abcd) :- convex_quadrilateral_from(a, b, c, d -> abcd) }
+  axm for a, b, c, d, abcd { convex_quadrilateral_from(d, c, b, a -> abcd) :- convex_quadrilateral_from(a, b, c, d -> abcd) }
+  thm for a, b, c, e, d, ab, ac the edbc { convex_quadrilateral_from(e, d, b, c -> edbc) :- -/collinear(a, b, c), edge_from(a, b -> ab), edge_from(a, c -> ac), incident(e, ac), e /= a, e /= c, incident(d, ab), d /= a, d /= b } proof elided
+  thm for a, b, c, d, ac, bd, abcd { intersect(ac, bd), -/incident(b, ac), -/incident(d, ac), -/incident(a, bd), -/incident(c, bd) :- convex_quadrilateral_from(a, b, c, d -> abcd), edge_from(a, c -> ac), edge_from(b, d -> bd) } proof elided
+  thm for a, b, c, d, ac, bd, abcd { concurrent(ac, bd) :- convex_quadrilateral_from(a, b, c, d -> abcd), line_through(a, c -> ac), line_through(b, d -> bd) } proof elided
+
+  axm for l, w the p { tangent_line_at(l, w -> p) :- tangent_line(l, w) }
+  axm for l, w, p { tangent_line_at(l, w -> p) :- tangent_line(l, w), incident(p, l), incident(p, w) }
+  axm for l, w, p { line(l), circle(w), incident(p, l), incident(p, w), tangent_line(l, w) :- tangent_line_at(l, w -> p) }
+  axm for l, w, p, q { -/incident(q, w) :- tangent_line_at(l, w -> p), incident(q, l), p /= q }
+  axm for l, w, p, q { -/incident(q, l) :- tangent_line_at(l, w -> p), incident(q, w), p /= q }
+  axm for l, w, p, q, pq { concurrent_at(l, pq -> p) :- tangent_line_at(l, w -> p), incident(q, w), p /= q, line_through(p, q -> pq) }
+  axm for l, w, p, q, r { -/collinear(p, q, r) :- tangent_line_at(l, w -> p), incident(q, w), p /= q, incident(r, l), p /= r }
+  axm for l, w, p, q, q' { -/collinear(p, q, q') :- tangent_line_at(l, w -> p), incident(q, w), incident(q', w), p /= q, p /= q', q /= q' }
+  axm for l, w, p, q, q', h_q { half_plane(q', l -> h_q) :- tangent_line_at(l, w -> p), incident(q, w), incident(q', w), p /= q, p /= q', q /= q', half_plane(q, l -> h_q) }
+
+  -- half planes
+  axm for l, p the h { half_plane(p, l -> h) :- line(l), -/incident(p, l) }
+  axm for l, p, h { point(p), line(l), -/incident(p, l) :- half_plane(p, l -> h) }
+  --axm for l, p, q, pq, h_q, r { half_plane(r, l -> h_q) :- incident(p, l), half_plane(q, l -> h_q), edge_from(p, q -> pq), incident(r, pq), r /= p }
+  axm for l, p, q, pq, h_q, r { half_plane(r, l -> h_q) :- incident(p, l), half_plane(q, l -> h_q), edge_from(p, q -> pq), incident(r, pq), r /= p, r /= q }
+  axm for l, p, q, pq, r, h_p, h_q { half_plane(r, l -> h_p) :- half_plane(p, l -> h_p), half_plane(q, l -> h_q), h_p = h_q, edge_from(p, q -> pq), incident(r, pq) }
+  axm for l, p, q, r, h_p, h_q, h_r { h_p = h_r :- half_plane(p, l -> h_p), half_plane(q, l -> h_q), half_plane(r, l -> h_r), h_p /= h_q, h_q /= h_r }
+  axm for a, b, c, bc, ab, p, h_a { half_plane(p, bc -> h_a) :- -/collinear(a, b, c), line_through(b, c -> bc), edge_from(a, b -> ab), incident(p, ab), p /= b, half_plane(a, bc -> h_a) }
+  --axm for a, b, c, abc, ab, p, ac, q, pq, h_a, h_b, h_c { h_a /= h_b, h_b = h_c :- triangle_from(a, b, c -> abc), edge_from(a, b -> ab), incident(p, ab), p /= a, p /= b, edge_from(a, c -> ac), incident(q, ac), q /= a, q /= c, line_through(p, q -> pq), half_plane(a, pq -> h_a), half_plane(b, pq -> h_b), half_plane(c, pq -> h_c) }
+  axm for a, b, c, e, d, ab, ac, de, h_a, h_b { h_a /= h_b, half_plane(c, de -> h_b) :- -/collinear(a, b, c), edge_from(a, b -> ab), edge_from(a, c -> ac), incident(e, ac), e /= a, e /= c, incident(d, ab), d /= a, d /= b, line_through(d, e -> de), half_plane(a, de -> h_a), half_plane(b, de -> h_b) }
+  --axm for a, b, c, d, ab, ab_ext, cd_ext, c', h_a, h_b { h_a /= h_b :- edge_from(a, b -> ab), incident(c, ab), a /= c, b /= c, line_through(a, b -> ab_ext), line_through(c, d -> cd_ext), concurrent_at(ab_ext, cd_ext -> c'), c = c', half_plane(a, cd_ext -> h_a), half_plane(b, cd_ext -> h_b) }
+  axm for a, b, c, ab, ab_ext, l, c', h_a, h_b { h_a /= h_b :- edge_from(a, b -> ab), incident(c, ab), a /= c, b /= c, line_through(a, b -> ab_ext), concurrent_at(ab_ext, l -> c'), c = c', half_plane(a, l -> h_a), half_plane(b, l -> h_b) }
+
+  -- angles
+  axm for a, b, c the t { angle_from(a, b, c -> t) :- point(a), point(b), point(c), a /= b, b /= c }
+  axm for a, b, c, t { angle_from(b, c, a -> t) :- angle_from(a, c, b -> t) }
+  axm for a, b, c, t { angle(t) :- angle_from(a, b, c -> t) }
+  axm for t the m_t { measure(t -> m_t) :- angle(t) }
+  axm for a, b, c, p, abc, bc, h_a, h_p { angle_from(p, b, c -> abc) :- angle_from(a, b, c -> abc), collinear(a, b, p), line_through(b, c -> bc), half_plane(a, bc -> h_a), half_plane(p, bc -> h_p), h_a = h_p }
+  -- alternate angles
+  --thm for a, b, c, d, ab, cd, bc, h_a, h_d, abc, dcb, m_abc, m_dcb { m_abc = m_dcb :- line_through(a, b -> ab), line_through(c, d -> cd), line_through(b, c -> bc), parallel(ab, cd), half_plane(a, bc -> h_a), half_plane(d, bc -> h_d), h_a /= h_d, angle_from(a, b, c -> abc), angle_from(d, c, b -> dcb), measure(abc -> m_abc), measure(dcb -> m_dcb) } proof elided
+  thm for a, b, c, d, ab, cd, bc, h_a, h_d, abc, dcb, m_abc { measure(dcb -> m_abc) :- line_through(a, b -> ab), line_through(c, d -> cd), line_through(b, c -> bc), parallel(ab, cd), half_plane(a, bc -> h_a), half_plane(d, bc -> h_d), h_a /= h_d, angle_from(a, b, c -> abc), angle_from(d, c, b -> dcb), measure(abc -> m_abc) } proof elided
+  thm for a, b, c, d, ab, cd, bc, h_a, h_d, abc, dcb, m_dcb { measure(abc -> m_dcb) :- line_through(a, b -> ab), line_through(c, d -> cd), line_through(b, c -> bc), parallel(ab, cd), half_plane(a, bc -> h_a), half_plane(d, bc -> h_d), h_a /= h_d, angle_from(a, b, c -> abc), angle_from(d, c, b -> dcb), measure(dcb -> m_dcb) } proof elided
+  -- cointerior angles (todo)
+  -- corresponding angles (todo)
+  -- supplementary angles (todo)
+  -- opposite angles (todo)
+  -- alternate segment theorem (v1)
+  --thm for a, b, c, c', d, e, abc, w, de, bc, h_a, h_d, dcb, bac, m_dcb, m_bac { m_dcb = m_bac :- triangle_from(a, b, c -> abc), circumcircle(abc -> w), line_through(d, e -> de), tangent_line_at(de, w -> c'), c = c', line_through(b, c -> bc), half_plane(a, bc -> h_a), half_plane(d, bc -> h_d), h_a /= h_d, angle_from(d, c, b -> dcb), angle_from(b, a, c -> bac), measure(dcb -> m_dcb), measure(bac -> m_bac) } proof elided
+  --thm for a, b, c, c', d, e, abc, w, de, ac, h_b, h_d, dcb, bac, m_dcb, m_bac { m_dcb = m_bac :- triangle_from(a, b, c -> abc), circumcircle(abc -> w), line_through(d, e -> de), tangent_line_at(de, w -> c'), c = c', line_through(a, c -> ac), half_plane(b, ac -> h_b), half_plane(d, ac -> h_d), h_b = h_d, angle_from(d, c, b -> dcb), angle_from(b, a, c -> bac), measure(dcb -> m_dcb), measure(bac -> m_bac) } proof elided
+  -- alternate segment theorem (v2a)
+  --thm for a, b, c, c', d, e, w, de, bc, h_a, h_d, dcb, bac, m_dcb, m_bac { m_dcb = m_bac :- circle_through(a, b, c -> w), line_through(d, e -> de), tangent_line_at(de, w -> c'), c = c', line_through(b, c -> bc), half_plane(a, bc -> h_a), half_plane(d, bc -> h_d), h_a /= h_d, angle_from(d, c, b -> dcb), angle_from(b, a, c -> bac), measure(dcb -> m_dcb), measure(bac -> m_bac) } proof elided
+  --thm for a, b, c, c', d, e, w, de, ac, h_b, h_d, dcb, bac, m_dcb, m_bac { m_dcb = m_bac :- circle_through(a, b, c -> w), line_through(d, e -> de), tangent_line_at(de, w -> c'), c = c', line_through(a, c -> ac), half_plane(b, ac -> h_b), half_plane(d, ac -> h_d), h_b = h_d, angle_from(d, c, b -> dcb), angle_from(b, a, c -> bac), measure(dcb -> m_dcb), measure(bac -> m_bac) } proof elided
+  -- alternate segment theorem (v2b)
+  thm for a, b, c, c', d, e, w, de, bc, h_a, h_d, dcb, bac, m_bac { measure(dcb -> m_bac) :- circle_through(a, b, c -> w), line_through(d, e -> de), tangent_line_at(de, w -> c'), c = c', line_through(b, c -> bc), half_plane(a, bc -> h_a), half_plane(d, bc -> h_d), h_a /= h_d, angle_from(d, c, b -> dcb), angle_from(b, a, c -> bac), measure(bac -> m_bac) } proof elided
+  thm for a, b, c, c', d, e, w, de, bc, h_a, h_d, dcb, bac, m_dcb { measure(bac -> m_dcb) :- circle_through(a, b, c -> w), line_through(d, e -> de), tangent_line_at(de, w -> c'), c = c', line_through(b, c -> bc), half_plane(a, bc -> h_a), half_plane(d, bc -> h_d), h_a /= h_d, angle_from(d, c, b -> dcb), angle_from(b, a, c -> bac), measure(dcb -> m_dcb) } proof elided
+  thm for a, b, c, c', d, e, w, de, ac, h_b, h_d, dcb, bac, m_bac { measure(dcb -> m_bac) :- circle_through(a, b, c -> w), line_through(d, e -> de), tangent_line_at(de, w -> c'), c = c', line_through(a, c -> ac), half_plane(b, ac -> h_b), half_plane(d, ac -> h_d), h_b = h_d, angle_from(d, c, b -> dcb), angle_from(b, a, c -> bac), measure(bac -> m_bac) } proof elided
+  thm for a, b, c, c', d, e, w, de, ac, h_b, h_d, dcb, bac, m_dcb { measure(bac -> m_dcb) :- circle_through(a, b, c -> w), line_through(d, e -> de), tangent_line_at(de, w -> c'), c = c', line_through(a, c -> ac), half_plane(b, ac -> h_b), half_plane(d, ac -> h_d), h_b = h_d, angle_from(d, c, b -> dcb), angle_from(b, a, c -> bac), measure(dcb -> m_dcb) } proof elided
+
+  -- interior (todo)
+
+  -- power of a point (todo)
+
+  -- TODO
+end

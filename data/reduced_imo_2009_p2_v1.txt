@@ -1,0 +1,43 @@
+-- IMO 2009 P2 (reduced v1):
+-- Let $ABC$ be a triangle with circumcenter $O$.
+-- The points $P$ and $Q$ are interior points of the
+-- sides $CA$ and $AB, respectively.
+-- Let $K$, $L$, and $M$ be midpoints of the segments
+-- $BP$, $CQ$, and $PQ$, respectively, and let $\Gamma$
+-- be the circle passing through $K$, $L$, and $M$.
+-- Suppose that the line $PQ$ is tangent to the circle
+-- $\Gamma$.
+-- Prove that lines $LM$ and $PC$ are parallel.
+theory
+  let A, B, C where point(A), point(B), point(C)
+  let ABC where triangle_from(A, B, C -> ABC)
+  let w where circumcircle(ABC -> w)
+  let O where center(w -> O)
+  let AC where edge_from(A, C -> AC)
+  let AB where edge_from(A, B -> AB)
+  let P, Q where point(P), point(Q), P /= Q,
+                 incident(P, AC), P /= A, P /= C,
+                 incident(Q, AB), Q /= A, Q /= B
+  let BP where edge_from(B, P -> BP)
+  let CQ where edge_from(C, Q -> CQ)
+  let PQ where edge_from(P, Q -> PQ)
+  let PQ_ext where line_through(P, Q -> PQ_ext)
+  let K where midpoint(BP -> K)
+  let L where midpoint(CQ -> L)
+  let M where midpoint(PQ -> M)
+  let k where circle_through(K, L, M -> k),
+              tangent_line(PQ_ext, k)
+  let OP, OQ where edge_from(O, P -> OP),
+                   edge_from(O, Q -> OQ)
+  let l_OP, l_OQ where length(OP -> l_OP),
+                       length(OQ -> l_OQ)
+  let PC_ext where line_through(P, C -> PC_ext)
+  let LM_ext where line_through(L, M -> LM_ext)
+  let KP_ext where line_through(K, P -> KP_ext)
+  let Z      where concurrent_at(KP_ext, LM_ext -> Z),
+                   between(K, Z, P)
+  let h_P_LM where half_plane(P, LM_ext -> h_P_LM)
+  let h_K_LM where half_plane(K, LM_ext -> h_K_LM)
+  propose parallel(LM_ext, PC_ext)
+  --propose l_OP = l_OQ
+end

@@ -1,0 +1,33 @@
+[package]
+name = "meringue"
+authors = ["Peter Jin"]
+version = "0.1.0-devel"
+edition = "2018"
+
+[profile.dev]
+#opt-level = 0
+opt-level = 1
+debug = true
+overflow-checks = true
+panic = "abort"
+codegen-units = 256
+incremental = true
+lto = false
+
+[profile.release]
+opt-level = 3
+debug = true
+overflow-checks = true
+panic = "abort"
+codegen-units = 1
+incremental = false
+lto = false
+
+[dependencies]
+fnv = { path = "../fnv" }
+libc = { path = "../libc" }
+regex_syntax = { path = "../regex/regex-syntax" }
+
+[[bin]]
+name = "run_oneshot"
+path = "tools/run_oneshot.rs"
