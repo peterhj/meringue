@@ -63,7 +63,7 @@ seed to get a result within a reasonable time.
 
 We also experimented with running DD+AR only
 (from AlphaGeometry [Trinh24])
-on our reduced versions IMO 2009 P2.
+on our reduced versions of IMO 2009 P2.
 We found that DD+AR in fact fails to solve the v3 reduction.
 Please see our branch at
 https://github.com/peterhj/alphageo-experiments/tree/exp
