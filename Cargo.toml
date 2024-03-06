@@ -3,6 +3,7 @@ name = "meringue"
 authors = ["Peter Jin"]
 version = "0.1.0-devel"
 edition = "2018"
+license = "Apache-2.0"
 
 [profile.dev]
 #opt-level = 0
