@@ -6,14 +6,17 @@ in which the prover operates by alternating steps:
 (1) fixed-point computation of logical inferences, and 
 (2) choosing a valid geometric construction.
 However, our prover also contains an implementation of
-_inferential exploration_,
-by which we choose a construction by measuring the
-_inferential coverage_ during the fixed-point stage,
-and selecting the construction that maximizes the coverage.
+_exploration-based_ forward-chaining,
+by which we choose a construction by maximizing an intrinsic
+exploration-based metric during the fixed-point stage,
+and selecting the construction that maximizes the metric.
 This form of exploration alone turns out to be sufficient to
 solve a hard reduction of an olympiad-level geometry problem,
 which even the deductive database plus geometry domain-specific
 algebraic reasoning ([Trinh24]) cannot solve.
+Please see the
+[blog post](https://peterhj.github.io/notes/exp.html)
+for more details.
 
 ## Instructions
 
