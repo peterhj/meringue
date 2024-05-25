@@ -1,6 +1,10 @@
+#[cfg(target_arch = "x86_64")]
 use crate::arch_util::{CpuArchInfo};
 use crate::io_util::{ReadBytesExt, WriteBytesExt, LE};
 use crate::log::*;
+
+#[cfg(all(not(target_arch = "x86_64"), target_os = "macos"))]
+use libc::{getentropy};
 
 use std::cmp::{min};
 use std::fmt;
@@ -368,11 +372,32 @@ impl BlockRngCore for EntropySource {
   }
 }
 
+#[cfg(all(not(target_arch = "x86_64"), target_os = "macos"))]
+impl Default for EntropySource {
+  fn default() -> EntropySource {
+    EntropySource{_mrk: ()}
+  }
+}
+
+#[cfg(all(not(target_arch = "x86_64"), target_os = "macos"))]
+impl BlockRngCore for EntropySource {
+  type Item = u64;
+  type Results = [u64; 1];
+
+  #[inline]
+  fn generate(&mut self, results: &mut [u64; 1]) {
+    let mut buf: [u8; 8] = [0; 8];
+    let buf_len = buf.len();
+    let ret = unsafe { getentropy(buf.as_mut_ptr() as *mut _, buf_len) };
+    assert_eq!(ret, 0);
+    results[0] = u64::from_le_bytes(buf);
+  }
+}
+
 pub struct EntropyRng {
   rng:  BlockRng64<EntropySource>,
 }
 
-#[cfg(target_arch = "x86_64")]
 impl Default for EntropyRng {
   #[inline(always)]
   fn default() -> EntropyRng {
@@ -382,7 +407,6 @@ impl Default for EntropyRng {
   }
 }
 
-#[cfg(target_arch = "x86_64")]
 impl RngCore for EntropyRng {
   #[inline(always)]
   fn next_u32(&mut self) -> u32 {
