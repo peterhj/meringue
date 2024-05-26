@@ -1293,7 +1293,7 @@ impl XPMach {
                 let o = qev.off[r] as usize;
                 let o2 = qev.off[r+1] as usize;
                 print!(" {}", theory.pretty_print_tup(rel, &qev.tup[o .. o2]));
-                if r+1 < rec_rarity {
+                if r+1 < rec_larity + rec_rarity {
                   print!(",");
                 }
               }
