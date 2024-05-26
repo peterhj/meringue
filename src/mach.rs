@@ -1273,8 +1273,33 @@ impl XPMach {
             }
             for (i, &(ref qev, ref qtu)) in steps.iter().enumerate() {
               let (larity, rarity) = env_mut.rel_arity2(CVar(qtu.rel.abs()));
-              println!("DEBUG: XPMach::step: Trc: step: idx={} rel={} ltup={:?} rtup={:?} pretty={:?}",
-                  i, qtu.rel, &qtu.tup[ .. larity], &qtu.tup[larity .. ],
+              let (rec_larity, rec_rarity) = env_mut.rec_arity(qev.rec);
+              print!("DEBUG: XPMach::step: Trc: step: idx={} rec={} lrec={} rrec={} pretty:",
+                  i,
+                  qev.rec.lower(), rec_larity, rec_rarity,
+              );
+              for r in 0 .. rec_larity {
+                let rel = qev.rel[r];
+                let o = qev.off[r] as usize;
+                let o2 = qev.off[r+1] as usize;
+                print!(" {}", theory.pretty_print_tup(rel, &qev.tup[o .. o2]));
+                if r+1 < rec_larity {
+                  print!(",");
+                }
+              }
+              print!(" -:");
+              for r in rec_larity .. rec_larity + rec_rarity {
+                let rel = qev.rel[r];
+                let o = qev.off[r] as usize;
+                let o2 = qev.off[r+1] as usize;
+                print!(" {}", theory.pretty_print_tup(rel, &qev.tup[o .. o2]));
+                if r+1 < rec_rarity {
+                  print!(",");
+                }
+              }
+              println!();
+              println!("DEBUG: XPMach::step: Trc: step:     rel={} ltup={:?} rtup={:?} pretty={:?}",
+                  qtu.rel, &qtu.tup[ .. larity], &qtu.tup[larity .. ],
                   theory.pretty_print_def2(qtu.rel, &qtu.tup[ .. larity], &qtu.tup[larity .. ]));
               /*for ra in 0 .. rarity {
                 assert_eq!(qtu.tup[larity + ra], env_mut.shm._fresh_var(TAttr::Gen));

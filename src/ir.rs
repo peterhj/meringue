@@ -631,7 +631,12 @@ impl<V> ITheoryEnv<V> {
       s.push_str(&self.pretty_print_num(tup[1]));
       return s;
     }
-    s.push_str(&self.pretty_print_num(rel));
+    if rel < 0 {
+      s.push_str("-/");
+      s.push_str(&self.pretty_print_num(-rel));
+    } else {
+      s.push_str(&self.pretty_print_num(rel));
+    }
     s.push_str("(");
     for (i, &t) in tup.iter().enumerate() {
       s.push_str(&self.pretty_print_num(t));
