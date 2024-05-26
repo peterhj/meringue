@@ -24,7 +24,7 @@ impl CpuTopoInfo {
   }
 }
 
-#[cfg(not(target_os = "linux"))]
+#[cfg(not(any(target_os = "linux", target_os = "macos")))]
 impl CpuTopoInfo {
   pub fn new() -> CpuTopoInfo {
     CpuTopoInfo::solo()
@@ -79,6 +79,50 @@ impl CpuTopoInfo {
           }
         }
       }
+    }
+    info
+  }
+}
+
+#[cfg(target_os = "macos")]
+impl CpuTopoInfo {
+  pub fn new() -> CpuTopoInfo {
+    let mut info = CpuTopoInfo::solo();
+    let out = match Command::new("sysctl").arg("hw.perflevel0.physicalcpu").output() {
+      Err(_) => {
+        panic!("bug: smp: topo_util: failed to `sysctl hw.perflevel0.physicalcpu`");
+      }
+      Ok(out) => out
+    };
+    for line in Cursor::new(out.stdout).lines() {
+      let line = line.unwrap();
+      if line.is_empty() {
+        break;
+      }
+      let mut line_parts = line.split_ascii_whitespace();
+      match line_parts.next() {
+        None => {
+          panic!("bug: smp: topo_util: missing key");
+        }
+        Some(key) => {
+          if key != "hw.perflevel0.physicalcpu:" {
+            panic!("bug: smp: topo_util: unexpected key");
+          }
+        }
+      }
+      match line_parts.next() {
+        None => {
+          panic!("bug: smp: topo_util: missing value");
+        }
+        Some(val) => {
+          let numcores: usize = val.parse().unwrap();
+          if log_debug() {
+            println!("DEBUG: smp: numcores={}", numcores);
+          }
+          info.numcores = numcores;
+        }
+      }
+      break;
     }
     info
   }
