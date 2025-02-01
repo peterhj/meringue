@@ -72,6 +72,13 @@ Please see our branch at
 https://github.com/peterhj/alphageo-experiments/tree/exp
 for our implementation of the experiment.
 
+## Related Work
+
+- [Newclid](https://github.com/LMCRC/Newclid)
+  (Vladimir Sicca, Tianxiang Xia, Mathïs Fédérico,
+  Philip John Gorinski, Simon Frieder, Shangling Jui)
+  [arXiv](https://arxiv.org/abs/2411.11938)
+
 ## References
 
 [Chou00] Shang-Ching Chou, Xiao-Shan Gao, and Jing-Zhong Shang.
