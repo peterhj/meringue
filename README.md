@@ -74,10 +74,10 @@ for our implementation of the experiment.
 
 ## Related Work
 
-- [Newclid](https://github.com/LMCRC/Newclid)
-  (Vladimir Sicca, Tianxiang Xia, Mathïs Fédérico,
-  Philip John Gorinski, Simon Frieder, Shangling Jui)
-  [arXiv](https://arxiv.org/abs/2411.11938)
+- [Newclid](https://github.com/LMCRC/Newclid):
+  Vladmir Sicca, Tianxiang Xia, Mathïs Fédérico,
+  Philip John Gorinski, Simon Frieder, Shangling Jui
+  [[arXiv:2411.11938](https://arxiv.org/abs/2411.11938)]
 
 ## References
 
